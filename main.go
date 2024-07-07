@@ -1,14 +1,19 @@
 package main
 
 import (
+	"api/src/config"
 	"api/src/router"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
-	fmt.Println("API rodando na porta 3333")
+	config.Carregar()
 	r := router.Gerar()
-	log.Fatal(http.ListenAndServe(":3333", r))
+	fmt.Println("API rodando")
+	portaString := ":" + strconv.Itoa(config.Porta)
+	log.Fatal(http.ListenAndServe(portaString, r))
+
 }
