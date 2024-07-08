@@ -21,6 +21,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
 	}
+	if erro = user.Prepare(); erro != nil {
+		responses.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
 	database, erro := db.Conection()
 	if erro != nil {
 		responses.Erro(w, http.StatusInternalServerError, erro)
