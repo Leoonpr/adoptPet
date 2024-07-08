@@ -15,15 +15,15 @@ type User struct {
 	CreatedAt time.Time `json:"CreatedAt,omitempty"`
 }
 
-func (user *User) Prepare() error {
-	if erro := user.validate(); erro != nil {
+func (user *User) Prepare(phase string) error {
+	if erro := user.validate(phase); erro != nil {
 		return erro
 	}
 	user.format()
 	return nil
 }
 
-func (user *User) validate() error {
+func (user *User) validate(phase string) error {
 	if user.Name == "" {
 		return errors.New("the name field is required")
 	}
@@ -33,7 +33,7 @@ func (user *User) validate() error {
 	if user.Email == "" {
 		return errors.New("the email field is required")
 	}
-	if user.Password == "" {
+	if phase == "register" && user.Password == "" {
 		return errors.New("the password field is required")
 	}
 	return nil

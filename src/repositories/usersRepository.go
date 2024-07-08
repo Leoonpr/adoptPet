@@ -59,3 +59,40 @@ func (repository users) ReadAll(nameOrNick string) ([]models.User, error) {
 	}
 	return users, nil
 }
+
+func (repository users) ReadUserByID(userID uint64) (models.User, error) {
+	lines, erro := repository.db.Query(
+		`SELECT id, name, nick, email, createdAt FROM users WHERE id = ?`, userID,
+	)
+	if erro != nil {
+		return models.User{}, erro
+	}
+	defer lines.Close()
+	var user models.User
+	if lines.Next() {
+		if erro = lines.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Nick,
+			&user.Email,
+			&user.CreatedAt,
+		); erro != nil {
+			return models.User{}, erro
+		}
+	}
+	return user, nil
+}
+
+func (repository users) UpdateUser(userID uint64, user models.User) error {
+	statment, erro := repository.db.Prepare(
+		"UPDATE users SET name =?, nick =?, email =? WHERE id =?",
+	)
+	if erro != nil {
+		return erro
+	}
+	defer statment.Close()
+	if _, erro = statment.Exec(user.Name, user.Nick, user.Email, userID); erro != nil {
+		return erro
+	}
+	return nil
+}
