@@ -14,16 +14,16 @@ type User struct {
 	Name      string    `json:"name,omitempty"`
 	Nick      string    `json:"nick,omitempty"`
 	Email     string    `json:"email,omitempty"`
-	Password  string    `json:"Password,omitempty"`
-	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	Password  string    `json:"password,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 }
 
 func (user *User) Prepare(phase string) error {
-	if erro := user.validate(phase); erro != nil {
-		return erro
+	if err := user.validate(phase); err != nil {
+		return err
 	}
-	if erro := user.format(phase); erro != nil {
-		return erro
+	if err := user.format(phase); err != nil {
+		return err
 	}
 	return nil
 }
@@ -39,8 +39,8 @@ func (user *User) validate(phase string) error {
 		return errors.New("the email field is required")
 	}
 
-	if erro := checkmail.ValidateFormat(user.Email); erro != nil {
-		return erro
+	if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return err
 	}
 
 	if phase == "register" && user.Password == "" {
@@ -55,9 +55,9 @@ func (user *User) format(phase string) error {
 	user.Email = strings.TrimSpace(user.Email)
 
 	if phase == "register" {
-		passwordWithHash, erro := security.Hash(user.Password)
-		if erro != nil {
-			return erro
+		passwordWithHash, err := security.Hash(user.Password)
+		if err != nil {
+			return err
 		}
 		user.Password = string(passwordWithHash)
 	}
