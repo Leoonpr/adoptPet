@@ -1,4 +1,5 @@
 package config
+
 import (
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 var (
 	StringConexaoBanco = ""
 	Porta              = 0
+	SecretKey          []byte
 )
 
 func Carregar() {
@@ -25,4 +27,7 @@ func Carregar() {
 	}
 
 	StringConexaoBanco = os.Getenv("DB_USER") + ":" + os.Getenv("DB_SENHA") + "@/" + os.Getenv("DB_NOME") + "?charset=utf8&parseTime=True&loc=Local"
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
+
 }

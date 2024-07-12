@@ -46,6 +46,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token, _ := authentication.CreateToken(usuarioSalvoNoBanco.ID)
-	fmt.Println(token)
 	w.Write([]byte(token))
 }
