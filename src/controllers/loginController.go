@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/src/authentication"
 	"api/src/db"
 	"api/src/models"
 	"api/src/repositories"
@@ -39,10 +40,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("")
 	fmt.Println("Hash armazenado no banco:", usuarioSalvoNoBanco.Password)
 	fmt.Println("Comprimento do hash:", len(usuarioSalvoNoBanco.Password))
-	fmt.Println("Senha fornecida pelo usuário:", user.Password)	
+	fmt.Println("Senha fornecida pelo usuário:", user.Password)
 	if erro = security.Compare(usuarioSalvoNoBanco.Password, user.Password); erro != nil {
 		responses.Erro(w, http.StatusUnauthorized, erro)
 		return
 	}
-	w.Write([]byte("logado"))
+	token, _ := authentication.CreateToken(usuarioSalvoNoBanco.ID)
+	fmt.Println(token)
+	w.Write([]byte(token))
 }
