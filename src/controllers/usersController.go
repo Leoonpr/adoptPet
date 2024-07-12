@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/authentication"
 	"api/src/db"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -91,6 +93,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
+
+	userIDToken, erro := authentication.ExtractUserID(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	if userID != userIDToken {
+		responses.Erro(w, http.StatusForbidden, errors.New("it is not possible to update a user other than yourself"))
+		return
+	}
+
 	bodyRequest, erro := io.ReadAll(r.Body)
 	if erro != nil {
 		responses.Erro(w, http.StatusUnprocessableEntity, erro)
@@ -125,6 +139,18 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
+
+	userIDToken, erro := authentication.ExtractUserID(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	if userID != userIDToken {
+		responses.Erro(w, http.StatusForbidden, errors.New("it is not possible to delete a user other than yourself"))
+		return
+	}
+
 	database, erro := db.Conection()
 	if erro != nil {
 		responses.Erro(w, http.StatusInternalServerError, erro)

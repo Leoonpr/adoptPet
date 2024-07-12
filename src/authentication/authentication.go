@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,7 +31,22 @@ func ValidateToken(r *http.Request) error {
 		return nil
 	}
 	return errors.New("invalid token")
+}
 
+func ExtractUserID(r *http.Request) (uint64, error) {
+	tokenString := extractToken(r)
+	token, erro := jwt.Parse(tokenString, returnVerificationKey)
+	if erro != nil {
+		return 0, erro
+	}
+	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		userID, erro := strconv.ParseUint(fmt.Sprintf("%.0f", permissoes["userID"]), 10, 64)
+		if erro != nil {
+			return 0, erro
+		}
+		return userID, nil
+	}
+	return 0, errors.New("Invalid Token")
 }
 
 func extractToken(r *http.Request) string {
