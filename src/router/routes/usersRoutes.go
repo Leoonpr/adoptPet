@@ -36,4 +36,10 @@ var usersRoutes = []Route{
 		Function:               controllers.DeleteUser,
 		RequiresAuthentication: true,
 	},
+	{
+		URI:                    "/users/{userID}/update-password",
+		Method:                 http.MethodPost,
+		Function:               controllers.UpdatePassword,
+		RequiresAuthentication: true,
+	},
 }

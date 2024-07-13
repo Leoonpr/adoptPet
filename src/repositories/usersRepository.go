@@ -126,3 +126,31 @@ func (repository users) FindByEmail(email string) (models.User, error) {
 	}
 	return user, nil
 }
+
+func (repository users) FindPassword(userID uint64) (string, error) {
+	line, erro := repository.db.Query("SELECT password FROM users WHERE id=?", userID)
+	if erro != nil {
+		return "", erro
+	}
+	defer line.Close()
+	var password string
+	if line.Next() {
+		if erro = line.Scan(&password); erro != nil {
+			return "", erro
+		}
+	}
+	return password, nil
+}
+
+func (repository users) UpdatePassword(userID uint64, password string) error {
+	statement, erro := repository.db.Prepare("UPDATE users SET password =? WHERE id =?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	if _, erro = statement.Exec(password, userID); erro != nil {
+		return erro
+	}
+	return nil
+}
