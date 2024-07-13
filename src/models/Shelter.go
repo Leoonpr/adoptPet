@@ -10,6 +10,7 @@ type Shelter struct {
 	Name      string `json:"name,omitempty"`
 	City      string `json:"city,omitempty"`
 	Address   string `json:"address,omitempty"`
+	Email     string `json:"email,omitempty"`
 	Phone     string `json:"phone,omitempty"`
 	CNPJ      string `json:"cnpj,omitempty"`
 	CreatedAt string `json:"created_at,omitempty"`
@@ -35,6 +36,9 @@ func (shelter *Shelter) validate() error {
 	if shelter.Address == "" {
 		return errors.New("the address field is required")
 	}
+	if shelter.Email == "" {
+		return errors.New("the email field is required")
+	}
 	if shelter.Phone == "" {
 		return errors.New("the phone field is required")
 	}
@@ -48,6 +52,7 @@ func (shelter *Shelter) format() error {
 	shelter.Name = strings.TrimSpace(shelter.Name)
 	shelter.City = strings.TrimSpace(shelter.City)
 	shelter.Address = strings.TrimSpace(shelter.Address)
+	shelter.Email = strings.TrimSpace(shelter.Email)
 	shelter.Phone = strings.TrimSpace(shelter.Phone)
 	shelter.CNPJ = strings.TrimSpace(shelter.CNPJ)
 	return nil
