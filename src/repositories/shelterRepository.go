@@ -70,3 +70,31 @@ func (repository shelter) ReadShelterByID(shelterID uint64) (models.Shelter, err
 	}
 	return shelter, nil
 }
+func (repository shelter) UpdateShelter(shelterID uint64, newShelter models.Shelter) error {
+	statment, err := repository.db.Prepare(
+		"UPDATE shelter SET name = ?, city = ?, address = ?, email = ?, phone = ?, cnpj = ? WHERE id = ?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statment.Close()
+	if _, err = statment.Exec(newShelter.Name, newShelter.City, newShelter.Address, newShelter.Email, newShelter.Phone, newShelter.CNPJ, shelterID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repository shelter) DeleteShelter(shelterID uint64) error {
+	statement, err := repository.db.Prepare(
+		"DELETE FROM shelter WHERE id =?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(shelterID); err != nil {
+		return err
+	}
+	return nil
+}

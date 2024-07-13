@@ -94,13 +94,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
-
 	userIDToken, erro := authentication.ExtractUserID(r)
 	if erro != nil {
 		responses.Erro(w, http.StatusUnauthorized, erro)
 		return
 	}
-
 	if userID != userIDToken {
 		responses.Erro(w, http.StatusForbidden, errors.New("it is not possible to update a user other than yourself"))
 		return

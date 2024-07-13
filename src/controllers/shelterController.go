@@ -6,7 +6,6 @@ import (
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -75,7 +74,7 @@ func ReadShelter(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	repository := repositories.NewShelterRepository(database)
 	shelter, err := repository.ReadShelterByID(shelterID)
-	if erro != nil {
+	if err != nil {
 		responses.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
@@ -83,8 +82,60 @@ func ReadShelter(w http.ResponseWriter, r *http.Request) {
 
 }
 func UpdateShelter(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Updating a shelter")
+	parameters := mux.Vars(r)
+	shelterID, err := strconv.ParseUint(parameters["shelterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	bodyRequest, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.Erro(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var shelter models.Shelter
+	if err = json.Unmarshal(bodyRequest, &shelter); err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = shelter.Prepare(); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer database.Close()
+
+	repository := repositories.NewShelterRepository(database)
+	if err = repository.UpdateShelter(shelterID, shelter); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
 }
+
 func DeleteShelter(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Deleting a shelter")
+	parameters := mux.Vars(r)
+	shelterID, err := strconv.ParseUint(parameters["shelterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	database, erro := db.Conection()
+	if erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+	}
+	defer database.Close()
+	repository := repositories.NewShelterRepository(database)
+	if err = repository.DeleteShelter(shelterID); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusNoContent, nil)
 }
