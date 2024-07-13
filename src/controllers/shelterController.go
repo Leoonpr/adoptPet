@@ -9,7 +9,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func CreateShelter(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +61,26 @@ func ReadShelters(w http.ResponseWriter, r *http.Request) {
 
 }
 func ReadShelter(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Reading a shelter")
+	parameters := mux.Vars(r)
+	shelterID, err := strconv.ParseUint(parameters["shelterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	database, erro := db.Conection()
+	if erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer database.Close()
+	repository := repositories.NewShelterRepository(database)
+	shelter, err := repository.ReadShelterByID(shelterID)
+	if erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	responses.JSON(w, http.StatusOK, shelter)
+
 }
 func UpdateShelter(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Updating a shelter")

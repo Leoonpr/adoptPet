@@ -19,19 +19,19 @@ var shelterRoutes = []Route{
 		RequiresAuthentication: true,
 	},
 	{
-		URI:                    "/shelters{shelterID}",
+		URI:                    "/shelters/{shelterID}",
 		Method:                 http.MethodGet,
 		Function:               controllers.ReadShelter,
 		RequiresAuthentication: true,
 	},
 	{
-		URI:                    "/shelters/{id}",
+		URI:                    "/shelters/{shelterID}",
 		Method:                 http.MethodPut,
 		Function:               controllers.UpdateShelter,
 		RequiresAuthentication: true,
 	},
 	{
-		URI:                    "/shelters/{id}",
+		URI:                    "/shelters/{shelterID}",
 		Method:                 http.MethodDelete,
 		Function:               controllers.DeleteShelter,
 		RequiresAuthentication: true,

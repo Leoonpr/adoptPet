@@ -54,3 +54,19 @@ func (repository shelter) ReadAll(name string) ([]models.Shelter, error) {
 	}
 	return shelters, nil
 }
+func (repository shelter) ReadShelterByID(shelterID uint64) (models.Shelter, error) {
+	lines, err := repository.db.Query("SELECT id, name, city, address, email, phone, cnpj, createdAt FROM shelter WHERE ID = ?", shelterID)
+	if err != nil {
+		return models.Shelter{}, err
+	}
+	defer lines.Close()
+	var shelter models.Shelter
+	if lines.Next() {
+		if err = lines.Scan(
+			&shelter.ID, &shelter.Name, &shelter.City, &shelter.Address, &shelter.Email, &shelter.Phone, &shelter.CNPJ, &shelter.CreatedAt,
+		); err != nil {
+			return models.Shelter{}, err
+		}
+	}
+	return shelter, nil
+}
