@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func CreateShelter(w http.ResponseWriter, r *http.Request) {
@@ -38,10 +39,23 @@ func CreateShelter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.JSON(w, http.StatusCreated, shelter)
-
 }
+
 func ReadShelters(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Reading all shelters")
+	name := strings.ToLower(r.URL.Query().Get("shelter"))
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+	}
+	defer database.Close()
+	repository := repositories.NewShelterRepository(database)
+	shelters, err := repository.ReadAll(name)
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, shelters)
+
 }
 func ReadShelter(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Reading a shelter")

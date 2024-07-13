@@ -10,10 +10,10 @@ var shelterRoutes = []Route{
 		URI:                    "/shelters",
 		Method:                 http.MethodPost,
 		Function:               controllers.CreateShelter,
-		RequiresAuthentication: false,
+		RequiresAuthentication: true,
 	},
 	{
-		URI:                    "/shelters/",
+		URI:                    "/shelters",
 		Method:                 http.MethodGet,
 		Function:               controllers.ReadShelters,
 		RequiresAuthentication: true,
