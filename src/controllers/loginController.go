@@ -8,7 +8,6 @@ import (
 	"api/src/responses"
 	"api/src/security"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -37,10 +36,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	fmt.Println("")
-	fmt.Println("Hash armazenado no banco:", usuarioSalvoNoBanco.Password)
-	fmt.Println("Comprimento do hash:", len(usuarioSalvoNoBanco.Password))
-	fmt.Println("Senha fornecida pelo usuário:", user.Password)
+
 	if erro = security.Compare(usuarioSalvoNoBanco.Password, user.Password); erro != nil {
 		responses.Erro(w, http.StatusUnauthorized, erro)
 		return
