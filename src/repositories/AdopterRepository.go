@@ -86,3 +86,18 @@ func (repository adopter) Update(id uint64, newAdopter models.Adopter) error {
 	}
 	return nil
 }
+
+func (repository adopter) Delete(id uint64) error {
+	statement, err := repository.db.Prepare(
+		"DELETE FROM adopter WHERE id =?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(id); err != nil {
+		return err
+	}
+	return nil
+}

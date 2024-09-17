@@ -115,5 +115,23 @@ func UpdateAdopter(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
+}
 
+func DeleteAdopter(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	adopterID, err := strconv.ParseUint(parameters["adopterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+	}
+	defer database.Close()
+	repository := repositories.NewAdopterRepository(database)
+	if err = repository.Delete(adopterID); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
 }

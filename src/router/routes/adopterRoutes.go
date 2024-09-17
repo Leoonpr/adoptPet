@@ -30,4 +30,10 @@ var adopterRoutes = []Route{
 		Function:               controllers.UpdateAdopter,
 		RequiresAuthentication: false,
 	},
+	{
+		URI:                    "/adopters/{adopterID}",
+		Method:                 http.MethodDelete,
+		Function:               controllers.DeleteAdopter,
+		RequiresAuthentication: false,
+	},
 }
