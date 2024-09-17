@@ -72,3 +72,17 @@ func (repository adopter) ReadByID(id uint64) (models.Adopter, error) {
 	}
 	return adopter, nil
 }
+
+func (repository adopter) Update(id uint64, newAdopter models.Adopter) error {
+	statment, err := repository.db.Prepare(
+		"UPDATE adopter SET name =?, email =?, cpf =?, phone =? WHERE id =?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statment.Close()
+	if _, err = statment.Exec(newAdopter.Name, newAdopter.Email, newAdopter.CPF, newAdopter.Phone, id); err != nil {
+		return err
+	}
+	return nil
+}

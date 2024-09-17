@@ -82,3 +82,38 @@ func ReadAdopter(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, adopter)
 
 }
+
+func UpdateAdopter(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	adopterID, err := strconv.ParseUint(parameters["adopterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	bodyRequest, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.Erro(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	var adopter models.Adopter
+	if err = json.Unmarshal(bodyRequest, &adopter); err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	if err = adopter.Prepare(); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer database.Close()
+	repository := repositories.NewAdopterRepository(database)
+	if err = repository.Update(adopterID, adopter); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+
+}

@@ -24,4 +24,10 @@ var adopterRoutes = []Route{
 		Function:               controllers.ReadAdopter,
 		RequiresAuthentication: false,
 	},
+	{
+		URI:                    "/adopters/{adopterID}",
+		Method:                 http.MethodPut,
+		Function:               controllers.UpdateAdopter,
+		RequiresAuthentication: false,
+	},
 }
