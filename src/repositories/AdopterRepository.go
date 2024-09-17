@@ -56,5 +56,19 @@ func (repository adopter) ReadAll(name string) ([]models.Adopter, error) {
 	}
 	return adopters, nil
 }
-
-
+func (repository adopter) ReadByID(id uint64) (models.Adopter, error) {
+	lines, err := repository.db.Query("Select id, name, email, cpf, phone from adopter WHERE id =?", id)
+	if err != nil {
+		return models.Adopter{}, err
+	}
+	defer lines.Close()
+	var adopter models.Adopter
+	if lines.Next() {
+		if err = lines.Scan(
+			&adopter.ID, &adopter.Name, &adopter.Email, &adopter.CPF, &adopter.Phone,
+		); err != nil {
+			return models.Adopter{}, err
+		}
+	}
+	return adopter, nil
+}

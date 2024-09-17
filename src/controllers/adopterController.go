@@ -8,7 +8,10 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func CreateAdopter(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +58,27 @@ func ReadAdopters(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.JSON(w, http.StatusOK, adopters)
+}
+
+func ReadAdopter(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	adopterID, err := strconv.ParseUint(parameters["adopterID"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer database.Close()
+	repository := repositories.NewAdopterRepository(database)
+	adopter, err := repository.ReadByID(adopterID)
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, adopter)
+
 }
