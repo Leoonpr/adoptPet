@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func CreateAdopter(w http.ResponseWriter, r *http.Request) {
@@ -38,4 +39,20 @@ func CreateAdopter(w http.ResponseWriter, r *http.Request) {
 	}
 	responses.JSON(w, http.StatusCreated, adopter)
 
+}
+
+func ReadAdopters(w http.ResponseWriter, r *http.Request) {
+	name := strings.ToLower(r.URL.Query().Get("adopter"))
+	database, err := db.Conection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+	}
+	defer database.Close()
+	repository := repositories.NewAdopterRepository(database)
+	adopters, err := repository.ReadAll(name)
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, adopters)
 }
